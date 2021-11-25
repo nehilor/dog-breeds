@@ -1,26 +1,46 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Card, Typography } from '@mui/material';
-import { fetchBreeds } from './store/actions/breeds.actions';
+import { Card, Typography, Grid, List, ListItem, ListItemText } from '@mui/material';
+import { fetchBreeds, fetchImages } from './store/actions/breeds.actions';
+//import { IBreeds } from './interfaces/interfaces';
 
 const Breeds = () => {
     const dispatch = useDispatch();
     const breedsData = useSelector((state) => state.breeds);
-    const isLoading = useSelector((state) => state.loading);
+    const imagesData = useSelector((state) => state.images);
+    const [breeds, setBreeds] = useState([]);
 
     useEffect(() => {
-        console.log('breedsData => ', breedsData);
-        if (!isLoading && !breedsData.length) {
-            //dispatch(fetchBreeds);
+        if (!breedsData.message) {
+            dispatch(fetchBreeds);
+        } else {
+            if(!imagesData.length){
+                const data = Object.entries(breedsData.message);
+                dispatch(fetchImages(data));
+            } else {
+                mapData(Object.entries(breedsData.message));
+            }
         }
-    }, [breedsData.length, dispatch, isLoading]);
+    }, [breedsData, dispatch, imagesData]);
 
+    const mapData = (data) => {
+        console.log('data => ', data);
+        /*const breeds = data.map(breed => {
+            return breed;
+        });
+        console.log('breeds => ', breeds);*/
+    }
 
     return (
         <Card variant="outlined">
             <Typography variant="h4" component="h2">
-                Form Example
+                Dog Breeds Application
             </Typography>
+            <Grid container spacing={2}>
+            <List dense={true}>
+              {breeds.map((b, i) => <ListItem key={i} value={b}><ListItemText primary={b} /></ListItem>)}
+            </List>
+            </Grid>
         </Card>
     );
 };
