@@ -154,7 +154,7 @@ const BreedsList = ({ breeds }) => {
                     Viewing breed: {selectedFamily} <span className={classes.link} onClick={() => selectFavorite(selectedFamily)}>Set as favorite</span>
                 </Typography>
                 <Grid container spacing={1}>
-                    {thumbsData?.map((thumb, i) => <Grid item xs={4} md={4}><img className={classes.image} alt={selectFamily} key={i} src={thumb} /></Grid>)}
+                    {thumbsData?.map((thumb, i) => <Grid key={i} item xs={4} md={4}><img className={classes.image} alt={selectedFamily} key={`${selectedFamily}-${i}`} src={thumb} /></Grid>)}
                 </Grid>
             </Box>
         </Modal>
