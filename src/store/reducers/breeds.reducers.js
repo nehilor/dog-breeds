@@ -5,6 +5,7 @@ const initState = {
     thumbs: [],
     selectedBreed: '',
     selectedFamily: '',
+    favorite: '',
     loading: false,
     error: ''
 }
@@ -19,6 +20,9 @@ const breedsReducer = (state = initState, action) => {
         }
         case 'breeds/select': {
             return { ...state, selectedBreed: action.payload }
+        }
+        case 'breeds/favorite': {
+            return { ...state, favorite: action.payload }
         }
         case 'families/loading': {
             return { ...state, loading: true }

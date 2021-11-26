@@ -76,4 +76,12 @@ const setThumbs = (images) => async (
     dispatch({ type: 'families/thumbs', payload });
 };
 
-export { fetchBreeds, fetchImages, fetchFamilies, setFamily, setSelected, setThumbs };
+const setFavorite = (breed) => async (
+    dispatch,
+    getState
+) => {
+    const payload = breed;
+    dispatch({ type: 'breeds/favorite', payload });
+};
+
+export { fetchBreeds, fetchImages, fetchFamilies, setFamily, setFavorite, setSelected, setThumbs };

@@ -2,7 +2,7 @@ import React from 'react';
 import { Box,Typography, Grid, List, ListItem, ListItemText, Modal } from '@mui/material';
 import { makeStyles } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchFamilies, setSelected, setFamily, setThumbs } from './store/actions/breeds.actions';
+import { fetchFamilies, setSelected, setFavorite, setFamily, setThumbs } from './store/actions/breeds.actions';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -34,6 +34,11 @@ const useStyles = makeStyles(theme => ({
         boxShadow: 24,
         p: 4,
         padding: '25px'
+    },
+    link: {
+        fontSize: '12px',
+        color: 'green',
+        cursor: 'pointer'
     }
 }));
 
@@ -46,6 +51,7 @@ const BreedsList = ({ breeds }) => {
     const familiesData = useSelector((state) => state.families);
     const imagesData = useSelector((state) => state.images);
     const thumbsData = useSelector((state) => state.thumbs);
+    const favoriteBreed = useSelector((state) => state.favorite);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
@@ -62,7 +68,6 @@ const BreedsList = ({ breeds }) => {
         for(let i = 0; i < 3; i++) {
             modalThubms.push(imageUrl[0]?.images[i]);
         }
-        console.log('modalThubms => ', modalThubms);
         dispatch(setThumbs(modalThubms));
         handleOpen();
     };
@@ -73,12 +78,21 @@ const BreedsList = ({ breeds }) => {
         return imageUrl.length > 0 ? imageUrl[0]?.images[0] : '';
     }
 
+    const selectFavorite = (breed) => {
+        dispatch(setFavorite(breed));
+    }
+
     return (
         <Grid container spacing={1} className={classes.root}>
              <Grid item xs={12} md={12}>
                 <Typography variant="h4" component="h2">
                     Dog Breeds Application
                 </Typography>
+                {favoriteBreed && 
+                    <Typography variant="h6" component="h2">
+                        Favorite breed: {favoriteBreed}
+                    </Typography>
+                }
              </Grid>
             <Grid item xs={6} md={6}>
                 <List dense={true} className={classes.list}>
@@ -137,7 +151,7 @@ const BreedsList = ({ breeds }) => {
             >
             <Box className={classes.modal}>
                 <Typography id="modal-modal-title" variant="h6" component="h2">
-                    Viewing breed: {selectedFamily}
+                    Viewing breed: {selectedFamily} <span className={classes.link} onClick={() => selectFavorite(selectedFamily)}>Set as favorite</span>
                 </Typography>
                 <Grid container spacing={1}>
                     {thumbsData?.map((thumb, i) => <Grid item xs={4} md={4}><img className={classes.image} alt={selectFamily} key={i} src={thumb} /></Grid>)}
