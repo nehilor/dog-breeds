@@ -45,9 +45,27 @@ const fetchImages = (breedsData) => async (
     dispatch({ type: 'images/success', payload });
 };
 
+const fetchFamilies = (breed) => async (
+    dispatch,
+    getState
+  ) => {
+    dispatch({ type: 'families/loading' });
+    const response = await fetch(`https://dog.ceo/api/breed/${breed}/list`);
+    const payload = await response.json();
+    dispatch({ type: 'families/success', payload });
+};
+
+const setFamily = (family) => async (
+    dispatch,
+    getState
+) => {
+    const payload = family;
+    dispatch({ type: 'families/select', payload });
+};
+
 const setSelected = (breed) => (dispatch, getState) => {
     const payload = breed;
     dispatch({ type: 'breeds/select', payload });
 };
 
-export { fetchBreeds, fetchImages, setSelected };
+export { fetchBreeds, fetchImages, fetchFamilies, setFamily, setSelected };
