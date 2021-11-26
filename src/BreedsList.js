@@ -1,8 +1,8 @@
 import React from 'react';
-import { Typography, Grid, List, ListItem, ListItemText } from '@mui/material';
+import { Box,Typography, Grid, List, ListItem, ListItemText, Modal } from '@mui/material';
 import { makeStyles } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchFamilies, setSelected, setFamily } from './store/actions/breeds.actions';
+import { fetchFamilies, setSelected, setFamily, setThumbs } from './store/actions/breeds.actions';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -18,15 +18,36 @@ const useStyles = makeStyles(theme => ({
     list: {
         maxHeight: '100vh',
         overflow: 'auto'
+    },
+    image: {
+        display: 'block',
+        width: '100%'
+    },
+    modal: {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 400,
+        background: '#fff',
+        border: '2px solid #000',
+        boxShadow: 24,
+        p: 4,
+        padding: '25px'
     }
 }));
 
 const BreedsList = ({ breeds }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
+    const [open, setOpen] = React.useState(false);
     const selectedBreed = useSelector((state) => state.selectedBreed);
+    const selectedFamily = useSelector((state) => state.selectedFamily);
     const familiesData = useSelector((state) => state.families);
     const imagesData = useSelector((state) => state.images);
+    const thumbsData = useSelector((state) => state.thumbs);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
 
     const handleClick = (breed) => {
         dispatch(setSelected(breed));
@@ -34,13 +55,22 @@ const BreedsList = ({ breeds }) => {
     }
 
     const selectFamily = (family) => {
-        dispatch(setFamily(family));
+        const selected = family ? `${selectedBreed}-${family}` : selectedBreed;
+        dispatch(setFamily(selected));
+        const imageUrl = imagesData?.filter(image => image.key === selected);
+        const modalThubms = [];
+        for(let i = 0; i < 3; i++) {
+            modalThubms.push(imageUrl[0]?.images[i]);
+        }
+        console.log('modalThubms => ', modalThubms);
+        dispatch(setThumbs(modalThubms));
+        handleOpen();
     };
 
-    const getThumb = (breed, family) => {
-        console.log('imagesData => ', imagesData);
-        console.log('breed => ', breed);
-        console.log('family => ', family);
+    const getThumb = (family) => {
+        const key = family ? `${selectedBreed}-${family}` : selectedBreed;
+        const imageUrl = imagesData?.filter(image => image.key === key);
+        return imageUrl.length > 0 ? imageUrl[0]?.images[0] : '';
     }
 
     return (
@@ -59,24 +89,61 @@ const BreedsList = ({ breeds }) => {
                 <Typography variant="h4" component="h2">
                     {selectedBreed ? `Selected breed: ${selectedBreed}` : 'Please select a breed'}
                 </Typography>
-                {familiesData && 
+                {familiesData?.message?.length > 0 ? 
                     <div>
                         <Typography variant="h6" component="h2">
                             Breed families
                         </Typography>
                         <List dense={true} className={classes.list}>
-                            {familiesData.message.map((f, i) => 
-                                <ListItem className={classes.item} key={i}>
-                                    <div>
-                                        <img alt={f} src={getThumb(f)} />
-                                        <ListItemText onClick={() => selectFamily(selectedBreed, f)} primary={f} />
-                                    </div>
+                            {familiesData?.message?.map((f, i) => 
+                                <ListItem onClick={() => selectFamily(f)}  className={classes.item} key={i}>
+                                    <Grid container spacing={1}>
+                                        <Grid item xs={6} md={6}>
+                                            <img className={classes.image} alt={f} src={getThumb(f)} />
+                                        </Grid>
+                                        <Grid item xs={6} md={6}>
+                                            <ListItemText primary={f} />
+                                        </Grid>
+                                    </Grid>
                                 </ListItem>)
                             }
                         </List>
                     </div>
+                : 
+                    <div>
+                        <Typography variant="h6" component="h2">
+                            Breed families
+                        </Typography>
+                        <List dense={true} className={classes.list}>
+                            <ListItem onClick={() => selectFamily('')}  className={classes.item} key={selectedBreed}>
+                                <Grid container spacing={1}>
+                                    <Grid item xs={6} md={6}>
+                                        <img className={classes.image} alt={selectedBreed} src={getThumb('')} />
+                                    </Grid>
+                                    <Grid item xs={6} md={6}>
+                                        <ListItemText primary={selectedBreed} />
+                                    </Grid>
+                                </Grid>
+                            </ListItem>
+                        </List>
+                    </div>
                 }
             </Grid>
+            <Modal
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+            <Box className={classes.modal}>
+                <Typography id="modal-modal-title" variant="h6" component="h2">
+                    Viewing breed: {selectedFamily}
+                </Typography>
+                <Grid container spacing={1}>
+                    {thumbsData?.map((thumb, i) => <Grid item xs={4} md={4}><img className={classes.image} alt={selectFamily} key={i} src={thumb} /></Grid>)}
+                </Grid>
+            </Box>
+        </Modal>
         </Grid>
     );
 };

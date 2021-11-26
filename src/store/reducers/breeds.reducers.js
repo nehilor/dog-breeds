@@ -2,6 +2,7 @@ const initState = {
     breeds: [],
     images: [],
     families: [],
+    thumbs: [],
     selectedBreed: '',
     selectedFamily: '',
     loading: false,
@@ -26,8 +27,10 @@ const breedsReducer = (state = initState, action) => {
             return { ...state, loading: false, families: action.payload }
         }
         case 'families/select': {
-            console.log('action.payload => ', action.payload);
             return { ...state, selectedFamily: action.payload }
+        }
+        case 'families/thumbs': {
+            return { ...state, thumbs: action.payload }
         }
         case 'images/loading': {
             return { ...state, loading: true }

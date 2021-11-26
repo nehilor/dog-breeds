@@ -30,14 +30,14 @@ const fetchImages = (breedsData) => async (
             breed[1].forEach(family => {
                 payload.push({
                     'key': `${breed[0]}-${family}`,
-                    'image': images[index].message[0]
+                    'images': images[index].message
                 });
                 index += 1;
             });
         } else {
             payload.push({
                 'key': `${breed[0]}`,
-                'image': images[index].message[0]
+                'images': images[index].message
             });
             index += 1;
         }
@@ -68,4 +68,12 @@ const setSelected = (breed) => (dispatch, getState) => {
     dispatch({ type: 'breeds/select', payload });
 };
 
-export { fetchBreeds, fetchImages, fetchFamilies, setFamily, setSelected };
+const setThumbs = (images) => async (
+    dispatch,
+    getState
+) => {
+    const payload = images;
+    dispatch({ type: 'families/thumbs', payload });
+};
+
+export { fetchBreeds, fetchImages, fetchFamilies, setFamily, setSelected, setThumbs };

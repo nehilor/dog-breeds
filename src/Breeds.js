@@ -8,7 +8,6 @@ const Breeds = () => {
     const dispatch = useDispatch();
     const breedsData = useSelector((state) => state.breeds);
     const imagesData = useSelector((state) => state.images);
-    const selectedFamily = useSelector((state) => state.selectedFamily);
     const [breeds, setBreeds] = useState([]);
 
     useEffect(() => {
@@ -35,9 +34,7 @@ const Breeds = () => {
     }
     
     return (
-        <div>
-            {selectedFamily ? '' : <BreedsList breeds={breeds} />}
-        </div>
+        <BreedsList breeds={breeds} />
     );
 };
 
