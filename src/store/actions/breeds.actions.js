@@ -42,8 +42,12 @@ const fetchImages = (breedsData) => async (
             index += 1;
         }
     });
-    //console.log("payload => ", payload);
     dispatch({ type: 'images/success', payload });
-  };
+};
 
-export { fetchBreeds, fetchImages };
+const setSelected = (breed) => (dispatch, getState) => {
+    const payload = breed;
+    dispatch({ type: 'breeds/select', payload });
+};
+
+export { fetchBreeds, fetchImages, setSelected };

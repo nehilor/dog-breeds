@@ -1,13 +1,32 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Card, Typography, Grid, List, ListItem, ListItemText } from '@mui/material';
-import { fetchBreeds, fetchImages } from './store/actions/breeds.actions';
-//import { IBreeds } from './interfaces/interfaces';
+import { makeStyles } from '@material-ui/core';
+import { Typography, Grid, List, ListItem, ListItemText } from '@mui/material';
+import { fetchBreeds, fetchImages, setSelected } from './store/actions/breeds.actions';
+
+const useStyles = makeStyles(theme => ({
+    root: {
+        width: '480px',
+        textAlign: 'center',
+        margin: '0 auto',
+        padding: '25px 0'
+    },
+    item: {
+        textTransform: 'capitalize',
+        cursor: 'pointer',
+    },
+    list: {
+        maxHeight: '100vh',
+        overflow: 'auto'
+    }
+}));
 
 const Breeds = () => {
+    const classes = useStyles();
     const dispatch = useDispatch();
     const breedsData = useSelector((state) => state.breeds);
     const imagesData = useSelector((state) => state.images);
+    const selectedBreed = useSelector((state) => state.selectedBreed);
     const [breeds, setBreeds] = useState([]);
 
     useEffect(() => {
@@ -24,24 +43,37 @@ const Breeds = () => {
     }, [breedsData, dispatch, imagesData]);
 
     const mapData = (data) => {
-        console.log('data => ', data);
-        /*const breeds = data.map(breed => {
-            return breed;
+        const breedsArray = data.map(breed => {
+            return {
+                'name': `${breed[0]}`,
+                'key': `${breed[0]}`
+            }
         });
-        console.log('breeds => ', breeds);*/
+        setBreeds(breedsArray);
+    }
+
+    const handleClick = (breed) => {
+        dispatch(setSelected(breed));
     }
 
     return (
-        <Card variant="outlined">
-            <Typography variant="h4" component="h2">
-                Dog Breeds Application
-            </Typography>
-            <Grid container spacing={2}>
-            <List dense={true}>
-              {breeds.map((b, i) => <ListItem key={i} value={b}><ListItemText primary={b} /></ListItem>)}
-            </List>
+        <Grid container spacing={1} className={classes.root}>
+             <Grid item xs={12} md={12}>
+                <Typography variant="h4" component="h2">
+                    Dog Breeds Application
+                </Typography>
+             </Grid>
+            <Grid item xs={6} md={6}>
+                <List dense={true} className={classes.list}>
+                {breeds.map((b, i) => <ListItem className={classes.item} key={i}><ListItemText onClick={() => handleClick(b.key)} primary={b.name} /></ListItem>)}
+                </List>
             </Grid>
-        </Card>
+            <Grid item xs={6} md={6}>
+            <Typography variant="body1" component="h2">
+                {selectedBreed ? `Selected breed: ${selectedBreed}` : 'Please select a breed'}
+            </Typography>
+            </Grid>
+        </Grid>
     );
 };
 
